@@ -11,7 +11,7 @@ Prerequisites
 
 Usage
 -
-- Download the script and place it in the same folder as your extracted rom
+- Download the script (.bat or .sh file) from the [releases page](https://github.com/LukeSkyD/NP1-FLASH-ALL-SCRIPT/releases) and place it in the same folder as your extracted rom
 - Open a command prompt in the folder
 - Run the script with `flash-all.bat` or `flash-all.sh` depending on your OS
 - Follow the on screen instructions
