@@ -19,5 +19,3 @@ Usage
 **NOTE:** If you are on Windows and get an error about the script not being able to run, you may need to run `Set-ExecutionPolicy Unrestricted` in an elevated powershell window. This will allow you to run the script. You can then run `Set-ExecutionPolicy Restricted` to set it back to normal.
 
 **NOTE:** If you are on Linux and get an error about the script not being able to run, you may need to run `chmod +x flash-all.sh` to make the script executable. You can then run the script with `./flash-all.sh`
-
-LINUX VERSION STILL IN DEVELOPMENT

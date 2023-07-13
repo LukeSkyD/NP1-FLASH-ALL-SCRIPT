@@ -89,7 +89,6 @@ echo auto = Slot with the most recent boot
 echo (default: auto)
 echo (type a, b or auto and press enter)
 echo (press enter to use default)
-echo (it is recommended to select a or b if you have recovering from a bootloop or crash)
 echo.
 set /p slot=Slot:
 if "%slot%" == "" set slot=auto
