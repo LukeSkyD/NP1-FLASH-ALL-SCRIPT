@@ -52,7 +52,7 @@ for i in "${list[@]}"
 do
     if [ ! -f "$i.img" ]; then
         echo "$i.img is missing"
-        errorFiles+=1
+        errorFiles++
     fi
 done
 if [ "$errorFiles" -gt 0 ]; then
