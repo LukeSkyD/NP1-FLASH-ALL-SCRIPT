@@ -1,8 +1,8 @@
-:: NP1-FLASH-ALL-SCRIPT - 2023-07-07 - Made by LukeSkyD
-:: This script will flash all the partitions of NP1.
+:: NP-FLASH-ALL-SCRIPT - 2023-09-20 - Made by LukeSkyD
+:: This script will flash all the partitions of NP1/NP2.
 :: Bootloader and critical partitions need to be unlocked first.
 
-:: The program will check: if the phone is connected with fastboot, if the phone is a NP1, if the bootloader is unlocked and if critical partitions are unlocked.
+:: The program will check: if the phone is connected with fastboot, if the phone is a NP1/2, if the bootloader is unlocked and if critical partitions are unlocked.
 
 :: The program will check if in the same folder there are the following files:
 @echo off
@@ -10,9 +10,9 @@ set list=abl aop bluetooth boot cpucp devcfg dsp dtbo featenabler hyp imagefv ke
 set errorFiles=0
 
 :: If one of the files is missing, the program will tell all the missing ones and exit.
-title NP1 Flash All Script
+title NP Flash All Script
 echo.
-echo NP1 Flash All Script
+echo NP Flash All Script
 echo.
 echo Platform-Tools must be installed.
 echo Bootloader and critical partitions needs to be unlocked first.
@@ -46,24 +46,32 @@ echo.
 echo All files are present.
 echo.
 
-:: Check if the phone is a NP1 by fastboot getvar product which returns a line of text: (bootloader) product: Spacewar. 
-:: The return must be contains: product: Spacewar
-echo Checking if the phone is a NP1...
+:: Check if the phone is a NP1 or NP2 by fastboot getvar product which returns a line of text: (bootloader) product: Spacewar (for NP1), (bootloader) product: Pong (for NP2). 
+:: The return must be contains: product: Spacewar or product: Pong
+echo Checking if the phone is a NP1 or NP2...
+echo If the program stops here, disconnect and reconnect the phone.
 for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "Spacewar"') do if not %%a == 1 (
+    for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "Pong"') do if not %%a == 1 (
+        echo.
+        echo ERROR: The phone is neither NP1 nor NP2.
+        echo.
+        echo Press any key to exit...
+        pause >nul
+        exit
+    )
     echo.
-    echo ERROR: The phone is not a NP1.
+    echo NP2 detected
     echo.
-    echo Press any key to exit...
-    pause >nul
-    exit
+) else (
+    echo.
+    echo NP1 detected
+    echo.
 )
-echo.
-echo The phone is a NP1.
-echo.
 
 :: Check if bootloader and critical partitions are unlocked by fastboot oem device-info which returns multiple lines of text.
 :: Of all the lines of text, just two contains "unlocked: true": (bootloader) Device unlocked: true and (bootloader) Device critical unlocked: true.
 :: If the two lines are not present, the program will tell it and exit.
+echo.
 echo Checking if the bootloader is unlocked...
 for /f "delims=" %%a in ('fastboot oem device-info 2^>^&1 ^| find ^/c ^"unlocked: true^"') do if not %%a == 2 (
     echo.
@@ -107,7 +115,6 @@ echo.
 :: The program asks for the user confirmation.
 :: If the user types "y" or "Y", the program will continue.
 :: If the user types "n" or "N", the program will exit.
-:: If the user types something else, the program will ask again.
 echo Are you sure you want to flash all the partitions?
 echo.
 echo y = Yes
@@ -161,8 +168,7 @@ echo.
 :: Asks if the user wants to wipe the data.
 :: If the user types "y" or "Y", the program will wipe the data.
 :: If the user types "n" or "N", the program will exit.
-:: If the user types something else, the program will ask again.
-echo Do you want to wipe the data?
+echo Do you want to wipe (format) data?
 echo.
 echo y = Yes
 echo n = No
@@ -206,7 +212,6 @@ echo.
 :: asks if the user wants to reboot the phone.
 :: If the user types "y" or "Y", the program will reboot the phone.
 :: If the user types "n" or "N", the program will exit.
-:: If the user types something else, the program will ask again.
 echo Do you want to reboot the phone?
 echo.
 echo y = Yes
