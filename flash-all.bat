@@ -6,6 +6,10 @@
 
 :: The program will check if in the same folder there are the following files:
 @echo off
+:: This is the list of partition new to NP2
+set listNP2=aop_config multiimgqti recovery uefi vbmeta_vendor xbl_ramdump
+:: vm-bootsys is a partition which is not used NOW (2023-10-05 aaaa-mm-gg notation) but could be in the future is im including it as optional
+set optionalNP2=vm-bootsys
 set list=abl aop bluetooth boot cpucp devcfg dsp dtbo featenabler hyp imagefv keymaster mdtp modem multiimgoem qupfw qweslicstore shrm super tz uefisecapp vbmeta vbmeta_system vendor_boot xbl xbl_config
 set errorFiles=0
 
@@ -28,23 +32,6 @@ if errorlevel 1 (
 echo.
 echo Fastboot is installed.
 echo.
-echo Checking that no files are missing...
-:: If the files are missing, the program will tell all the missing ones and exit.
-:: The missing files are appended to the missingFiles variable.
-for %%i in (%list%) do (
-    if not exist %%i.img (
-        set /a errorFiles+=1
-        echo %%i.img is missing.
-    )
-)
-if not %errorFiles% == 0 (
-    echo.
-    echo ERROR: %errorFiles% file/s missing.
-    goto end
-)
-echo.
-echo All files are present.
-echo.
 
 :: Check if the phone is a NP1 or NP2 by fastboot getvar product which returns a line of text: (bootloader) product: Spacewar (for NP1), (bootloader) product: Pong (for NP2). 
 :: The return must be contains: product: Spacewar or product: Pong
@@ -62,6 +49,10 @@ for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "Spacewar"')
     echo.
     echo NP2 detected
     echo.
+    :: If the phone is a NP2, listNP2 will be appended to the list variable.
+    set list=%list% %listNP2%
+    :: if -o is present, optionalNP2 will be appended to the list variable.
+    for %%i in (%*) do if "%%i" == "-o" set list=%list% %optionalNP2%
 ) else (
     echo.
     echo NP1 detected
@@ -83,6 +74,24 @@ for /f "delims=" %%a in ('fastboot oem device-info 2^>^&1 ^| find ^/c ^"unlocked
 )
 echo.
 echo Bootloader and critical partitions unlocked.
+echo.
+
+echo Checking that no files are missing...
+:: If the files are missing, the program will tell all the missing ones and exit.
+:: The missing files are appended to the missingFiles variable.
+for %%i in (%list%) do (
+    if not exist %%i.img (
+        set /a errorFiles+=1
+        echo %%i.img is missing.
+    )
+)
+if not %errorFiles% == 0 (
+    echo.
+    echo ERROR: %errorFiles% file/s missing.
+    goto end
+)
+echo.
+echo All files are present.
 echo.
 
 :: The program asks for which slot to flash the partitions.

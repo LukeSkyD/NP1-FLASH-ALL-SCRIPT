@@ -1,10 +1,15 @@
-# NP-FLASH-ALL-SCRIPT - 2023-09-20 - Made by LukeSkyD
+# NP-FLASH-ALL-SCRIPT - 2023-10-05 - Made by LukeSkyD
 # This script will flash all the partitions of NP1/NP2.
 # Bootloader and critical partitions need to be unlocked first.
 
 # The program will check: if the phone is connected with fastboot, if the phone is a NP1 or NP2, if the bootloader is unlocked and if critical partitions are unlocked.
 
 # The program will check if in the same folder there are the following files:
+# This is the list of partition new to NP2
+listNP2="aop_config multiimgqti recovery uefi vbmeta_vendor xbl_ramdump"
+# vm-bootsys is a partition which is not used NOW (2023-10-05 aaaa-mm-gg notation) but could be in the future is im including it as optional
+optionalNP2="vm-bootsys"
+# This is the list of partition both for NP1 and NP2
 list="abl aop bluetooth boot cpucp devcfg dsp dtbo featenabler hyp imagefv keymaster mdtp modem multiimgoem qupfw qweslicstore shrm super tz uefisecapp vbmeta vbmeta_system vendor_boot xbl xbl_config"
 errorFiles=0
 
@@ -15,26 +20,13 @@ echo "Platform-Tools must be installed."
 echo "Bootloader and critical partitions needs to be unlocked first."
 echo
 
-echo "Checking that all the files are present..."
-for i in $list
-do
-    if [ ! -f "$i.img" ]; then
-        echo "$i.img is missing"
-        errorFiles=$((errorFiles+1))
-    fi
-done
-if [ "$errorFiles" -gt 0 ]; then
-    echo $errorFiles "file/s missing"
-    exit
-fi
-echo "All the files are present"
-
 echo "Checking that fastboot is working..."
 if ! fastboot devices | grep -q "fastboot"
 then
     echo "fastboot is not working"
     exit
 fi
+
 echo "Checking that the phone is a NP1 (Spacewar) or NP2 (Pong)..."
 echo "If the program stops here, disconnect and reconnect the phone/check that drivers are installed correctly/restart the bootloader."
 if ! fastboot getvar product 2>&1 | grep -q "Spacewar" && ! fastboot getvar product 2>&1 | grep -q "Pong"
@@ -42,6 +34,7 @@ then
     echo "The phone is not a NP1 (Spacewar) or NP2 (Pong)"
     exit
 fi
+
 echo "Checking that the bootloader is unlocked..."
 if ! fastboot getvar unlocked 2>&1 | grep -q "yes"
 then
@@ -57,6 +50,31 @@ then
     echo "Critical partitions are not unlocked"
     exit
 fi
+
+# if the phone is NP2, listNP2 will be appended to list
+if fastboot getvar product 2>&1 | grep -q "Pong"
+then
+    list="$list $listNP2"
+
+    # if -o is present, optionalNP2 will be appended to list
+    if [ "$1" == "-o" ]; then
+        list="$list $optionalNP2"
+    fi
+fi
+
+echo "Checking that all the files are present..."
+for i in $list
+do
+    if [ ! -f "$i.img" ]; then
+        echo "$i.img is missing"
+        errorFiles=$((errorFiles+1))
+    fi
+done
+if [ "$errorFiles" -gt 0 ]; then
+    echo $errorFiles "file/s missing"
+    exit
+fi
+echo "All the files are present"
 
 # The program asks for which slot to flash the partitions.
 # The program will check if the slot is a, b or auto (empty).
