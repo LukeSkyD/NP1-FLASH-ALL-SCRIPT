@@ -33,12 +33,12 @@ echo.
 echo Fastboot is installed.
 echo.
 
-:: Check if the phone is a NP1 or NP2 by fastboot getvar product which returns a line of text: (bootloader) product: Spacewar (for NP1), (bootloader) product: Pong (for NP2). 
+:: Check if the phone is a NP1 or NP2 by fastboot getvar product which returns a line of text: (bootloader) product: Spacewar (for NP1), (bootloader) product:Pong (for NP2). 
 :: The return must be contains: product: Spacewar or product: Pong
 echo Checking if the phone is a NP1 or NP2...
 echo If the program stops here, disconnect and reconnect the phone.
 for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "Spacewar"') do if not %%a == 1 (
-    for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "Pong"') do if not %%a == 1 (
+    for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "product:Pong"') do if not %%a == 1 (
         echo.
         echo ERROR: The phone is neither NP1 nor NP2.
         echo.
