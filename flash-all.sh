@@ -27,11 +27,11 @@ then
     exit
 fi
 
-echo "Checking that the phone is a NP1 (Spacewar) or NP2 (Pong)..."
+echo "Checking that the phone is a NP1 (Spacewar) or NP2 (taro)..."
 echo "If the program stops here, disconnect and reconnect the phone/check that drivers are installed correctly/restart the bootloader."
-if ! fastboot getvar product 2>&1 | grep -q "Spacewar" && ! fastboot getvar product 2>&1 | grep -q "Pong"
+if ! fastboot getvar product 2>&1 | grep -q "Spacewar" && ! fastboot getvar product 2>&1 | grep -q "taro"
 then
-    echo "The phone is not a NP1 (Spacewar) or NP2 (Pong)"
+    echo "The phone is not a NP1 (Spacewar) or NP2 (taro)"
     exit
 fi
 
@@ -52,7 +52,7 @@ then
 fi
 
 # if the phone is NP2, listNP2 will be appended to list
-if fastboot getvar product 2>&1 | grep -q "Pong"
+if fastboot getvar product 2>&1 | grep -q "taro"
 then
     list="$list $listNP2"
 

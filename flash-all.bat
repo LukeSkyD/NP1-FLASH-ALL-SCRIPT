@@ -38,7 +38,7 @@ echo.
 echo Checking if the phone is a NP1 or NP2...
 echo If the program stops here, disconnect and reconnect the phone.
 for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "Spacewar"') do if not %%a == 1 (
-    for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "product:Pong"') do if not %%a == 1 (
+    for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "taro"') do if not %%a == 1 (
         echo.
         echo ERROR: The phone is neither NP1 nor NP2.
         echo.
@@ -47,7 +47,7 @@ for /f "delims=" %%a in ('fastboot getvar product 2^>^&1 ^| find /c "Spacewar"')
         exit
     )
     echo.
-    echo NP2 detected
+    echo NP2 - taro device detected
     echo.
     :: If the phone is a NP2, listNP2 will be appended to the list variable.
     set list=%list% %listNP2%
